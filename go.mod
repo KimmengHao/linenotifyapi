@@ -1,4 +1,4 @@
-module linenotifyapi
+module main
 
 go 1.16
 
