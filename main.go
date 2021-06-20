@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -29,14 +30,14 @@ type numsResponseData struct {
 }
 
 func Authorize(w http.ResponseWriter, req *http.Request) {
-	// c, err := auth.New(ClientID, BaseURL+"/callback")
-	// if err != nil {
-	// 	fmt.Fprintf(w, "error:%v", err)
-	// 	return
-	// }
-	// http.SetCookie(w, &http.Cookie{Name: "state", Value: c.State, Expires: time.Now().Add(60 * time.Second)})
+	c, err := auth.New(ClientID, BaseURL+"/callback")
+	if err != nil {
+		fmt.Fprintf(w, "error:%v", err)
+		return
+	}
+	http.SetCookie(w, &http.Cookie{Name: "state", Value: c.State, Expires: time.Now().Add(60 * time.Second)})
 
-	// c.Redirect(w, req)
+	c.Redirect(w, req)
 	fmt.Fprintf(w, "token:authorize")
 
 }
