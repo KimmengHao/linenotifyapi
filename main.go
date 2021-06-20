@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,11 +10,14 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+
+	"github.com/utahta/go-linenotify/auth"
+	"github.com/utahta/go-linenotify/token"
 )
 
 // EDIT THIS
 var (
-	BaseURL      = "https://apigolang7.herokuapp.com/"
+	BaseURL      = "http://localhost:9090"
 	ClientID     = "BhWus13WIhI4HI7loycM42"
 	ClientSecret = "HJHgKSrqUuhIepCzNkCx7E82RSTN1m47dqPoS1Lf6VA"
 )
@@ -38,33 +42,33 @@ func Authorize(w http.ResponseWriter, req *http.Request) {
 }
 
 func Callback(w http.ResponseWriter, req *http.Request) {
-	// resp, err := auth.ParseRequest(req)
-	// if err != nil {
-	// 	fmt.Fprintf(w, "error:%v", err)
-	// 	return
-	// }
+	resp, err := auth.ParseRequest(req)
+	if err != nil {
+		fmt.Fprintf(w, "error:%v", err)
+		return
+	}
 
-	// state, err := req.Cookie("state")
-	// if err != nil {
-	// 	fmt.Fprintf(w, "error:%v", err)
-	// 	return
-	// }
-	// if resp.State != state.Value {
-	// 	fmt.Fprintf(w, "error:%v", err)
-	// 	return
-	// }
+	state, err := req.Cookie("state")
+	if err != nil {
+		fmt.Fprintf(w, "error:%v", err)
+		return
+	}
+	if resp.State != state.Value {
+		fmt.Fprintf(w, "error:%v", err)
+		return
+	}
 
-	// c := token.NewClient(BaseURL+"/callback", ClientID, ClientSecret)
-	// accessToken, err := c.GetAccessToken(context.Background(), resp.Code)
-	// if err != nil {
-	// 	fmt.Fprintf(w, "error:%v", err)
-	// 	return
-	// }
+	c := token.NewClient(BaseURL+"/callback", ClientID, ClientSecret)
+	accessToken, err := c.GetAccessToken(context.Background(), resp.Code)
+	if err != nil {
+		fmt.Fprintf(w, "error:%v", err)
+		return
+	}
 	// adddata(accessToken)
 
 	// notify(accesstoken)
 
-	fmt.Fprintf(w, "token:s")
+	fmt.Fprintf(w, "token:%v", accessToken)
 	// fmt.Fprintf(w, "token:caut")
 
 }
