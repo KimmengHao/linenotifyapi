@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -11,7 +10,6 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
-	"github.com/utahta/go-linenotify"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
@@ -81,38 +79,10 @@ func adddata(accessToken string) {
 		break
 	}
 
-	// fmt.Println(getdocdata)
-	// doc := make(map[string]interface{})
-	// doc["name"] = "Hello Tokyo!"
-	// doc["country"] = "Japan"
-
-	// _, _, err = client.Collection("tm_members_uat").Add(ctx, doc)
-	// if err != nil {
-	// 	// Handle any errors in an appropriate way, such as returning them.
-	// 	log.Printf("An error has occurred: %s", err)
-	// }
-
 }
 
-func notificationtoline(response http.ResponseWriter, request *http.Request) {
-
-	decoder := json.NewDecoder(request.Body)
-
-	var numsData numsResponseData
-
-	decoder.Decode(&numsData)
-	fmt.Println("numsData")
-	fmt.Println(numsData)
-	fmt.Println(numsData.UserID)
-
-	token := numsData.UserID // EDIT THIS
-	msgtext := fmt.Sprintf("%s%.2f", "Your current point is ", numsData.Point)
-
-	c := linenotify.NewClient()
-	c.Notify(context.Background(), token, msgtext, "", "", nil)
-}
-func handleRequests() {
-
+func main() {
+	// adddata()
 	godotenv.Load()
 	port := os.Getenv("PORT")
 
@@ -124,11 +94,4 @@ func handleRequests() {
 	router.HandleFunc("/callback", Callback)
 	// router.HandleFunc("/notify", notificationtoline)
 	log.Fatal(http.ListenAndServe(":"+port, handlers.CORS(headers, methods, origins)(router)))
-
-}
-
-func main() {
-	// adddata()
-
-	handleRequests()
 }
